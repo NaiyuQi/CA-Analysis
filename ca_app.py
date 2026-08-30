@@ -139,12 +139,22 @@ if uploaded_file:
 
         st.markdown("---")
         st.header("② Parameters & Non-dimensionalized Data")
-
+        preset = st.selectbox("Select liquid preset", ["Room Temperature (RT)", "120°C", "200°C", "Custom"])
+        presets = {
+            "Room Temperature (RT)": (0.8934, 121.7),
+            "120°C":                 (0.8485, 115.1),
+            "200°C":                 (0.8304, 111.0),
+        }
         c1, c2 = st.columns(2)
         with c1:
-            sft = st.number_input("Surface tension (mN/m)", value=110.0)
-            den = st.number_input("Density (g/cm³)", value=0.775, format="%.4f")
-            g   = st.number_input("Gravity (m/s²)", value=9.81, format="%.3f")
+            if preset == "Custom":
+                sft = st.number_input("Surface tension (mN/m)", value=110.0)
+                den = st.number_input("Density (g/cm³)", value=0.775, format="%.4f")
+            else:
+                den, sft = presets[preset]
+                st.write(f"**Surface tension:** {sft} mN/m")
+                st.write(f"**Density:** {den} g/cm³")
+            g = st.number_input("Gravity (m/s²)", value=9.81, format="%.3f")
         with c2:
             p    = st.number_input("Perimeter (mm)", value=32.0)
             area = st.number_input("Area (mm²)", value=15.0)
