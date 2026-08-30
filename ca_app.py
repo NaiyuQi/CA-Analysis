@@ -6,6 +6,7 @@ from scipy.stats import linregress
 from scipy.interpolate import interp1d
 from math import sqrt, degrees, asin
 import io
+import plotly.io as pio
 
 st.set_page_config(page_title="Contact Angle Analysis", layout="wide")
 st.title("Contact Angle Analysis")
@@ -62,6 +63,7 @@ def make_fig(title, xlabel='Non-dimensionalized Position', ylabel='Non-dimension
 uploaded_file = st.file_uploader("Upload DynamicCA .txt file", type="txt")
 
 if uploaded_file:
+    base_name = uploaded_file.name.replace('.txt', '')
     file_bytes = uploaded_file.read()
     cycle = st.radio("Select cycle", [1, 2, 3, 4], horizontal=True)
     data, set1, set2 = load_dynamic_ca_data(file_bytes, cycle=cycle)
@@ -179,6 +181,9 @@ if uploaded_file:
             fig.add_vline(x=x_min_aca, line_dash='dash', line_color='red', opacity=0.4)
             fig.add_vline(x=x_max_aca, line_dash='dash', line_color='red', opacity=0.4)
             st.plotly_chart(fig, width='stretch')
+            img_bytes = pio.to_image(fig, format='png', width=900, height=400)
+            st.download_button(label="Download Overview", data=img_bytes,
+                   file_name=f"{base_name}_all_cycles.png", mime="image/png")
             st.write(f"**ACA fit:** y = {slope:.6f}x + {intercept:.6f}  R² = {r_value**2:.6f}")
         else:
             st.warning("Need at least 2 points in the fit window.")
