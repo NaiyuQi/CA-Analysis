@@ -92,10 +92,9 @@ if uploaded_file:
             fig.add_trace(go.Scatter(x=s2['pos2'], y=s2['wt2'], mode='lines',
                                      name=f'Cycle {c} Rec', line=dict(color=colors_rec[c-1], dash='dash')))
         st.plotly_chart(fig, width='stretch')
-        
-        img_bytes = pio.to_image(fig, format='png', width=900, height=400)
-        st.download_button(label="Download Overview", data=img_bytes,
-                   file_name=f"{base_name}_all_cycles.png", mime="image/png")
+        html_bytes = fig.to_html().encode('utf-8')
+        st.download_button(label="Download Overview", data=html_bytes,
+                   file_name=f"{base_name}_all_cycles.html", mime="text/html")
 
         # Selected cycle
         st.subheader(f"Selected Cycle {cycle}")
