@@ -94,7 +94,7 @@ if uploaded_file:
         st.plotly_chart(fig, width='stretch')
         
         img_bytes = pio.to_image(fig, format='png', width=900, height=400)
-            st.download_button(label="Download Overview", data=img_bytes,
+        st.download_button(label="Download Overview", data=img_bytes,
                    file_name=f"{base_name}_all_cycles.png", mime="image/png")
 
         # Selected cycle
