@@ -92,9 +92,24 @@ if uploaded_file:
             fig.add_trace(go.Scatter(x=s2['pos2'], y=s2['wt2'], mode='lines',
                                      name=f'Cycle {c} Rec', line=dict(color=colors_rec[c-1], dash='dash')))
         st.plotly_chart(fig, width='stretch')
-        img_bytes = pio.to_image(fig, format='svg', width=900, height=400)
-        st.download_button(label="Download Overview", data=img_bytes,
-                   file_name=f"{base_name}_all_cycles.svg", mime="image/svg+xml")
+        # PNG download using matplotlib
+        fig_dl, ax_dl = plt.subplots(figsize=(9, 4))
+        for c in range(1, 5):
+            _, s1, s2 = load_dynamic_ca_data(file_bytes, cycle=c)
+            ax_dl.plot(s1['pos1'], s1['wt1'], color=colors_adv[c-1], linestyle='-', label=f'Cycle {c} Adv')
+            ax_dl.plot(s2['pos2'], s2['wt2'], color=colors_rec[c-1], linestyle='--', label=f'Cycle {c} Rec')
+        ax_dl.set_xlabel('Position (mm)')
+        ax_dl.set_ylabel('Weight (g)')
+        ax_dl.set_title('Raw Data: All Cycles')
+        ax_dl.grid(True)
+        ax_dl.legend(fontsize=7)
+        plt.tight_layout()
+        buf = io.BytesIO()
+        fig_dl.savefig(buf, format='png', dpi=150)
+        buf.seek(0)
+        plt.close(fig_dl)
+        st.download_button(label="Download Overview", data=buf,
+                   file_name=f"{base_name}_all_cycles.png", mime="image/png")
 
         # Selected cycle
         st.subheader(f"Selected Cycle {cycle}")
