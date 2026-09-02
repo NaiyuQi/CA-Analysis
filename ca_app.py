@@ -423,26 +423,26 @@ if uploaded_file:
 
                 st.subheader("Results")
 				
-                def copy_row(label, value):
-                    st.markdown(f"""
-                    <div style="display:flex; align-items:center; margin-bottom:6px;">
-                        <span style="width:280px; font-weight:500;">{label}</span>
-                        <span style="width:120px;">{value}</span>
-                        <button onclick="navigator.clipboard.writeText('{value}')"
-                                style="margin-left:10px; padding:2px 10px; cursor:pointer;">
-                            Copy
-                        </button>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                copy_row("ACA",                 f"{ca_aca:.2f}")
-                copy_row("RCA",                 f"{rca:.2f}")
-                copy_row("Classic CAH",         f"{ca_aca - rca:.2f}")
-                copy_row("Slope deviation",     f"{deviation:.2f}")
-                copy_row("Enclosed Area",       f"{encloarea:.4f}")
-                copy_row("McKinley Hysteresis", f"{mckinley:.4f}")
-                copy_row("Capillary length",    f"{l_cap:.4f}")
-                copy_row("Theoretical slope",   f"{slope_theoretical:.6f}")
-                copy_row("Measured ACA slope",  f"{slope:.6f}")
-                copy_row("x2",                  f"{x2:.6f}")
-                copy_row("x3",                  f"{x3:.6f}")
+	                def copy_row(label, value):
+	                    st.markdown(f"""
+	                    <div style="display:flex; align-items:center; margin-bottom:6px;">
+	                        <span style="width:280px; font-weight:500;">{label}</span>
+	                        <span style="width:120px;">{value}</span>
+	                        <button onclick="navigator.clipboard.writeText('{value}')"
+	                                style="margin-left:10px; padding:2px 10px; cursor:pointer;">
+	                            Copy
+	                        </button>
+	                    </div>
+	                    """, unsafe_allow_html=True)
+	                    
+	                copy_row("ACA",                 f"{ca_aca:.2f}")
+	                copy_row("RCA",                 f"{rca:.2f}")
+	                copy_row("Classic CAH",         f"{ca_aca - rca:.2f}")
+	                copy_row("Slope deviation",     f"{deviation:.2f}")
+	                copy_row("Enclosed Area",       f"{encloarea:.4f}")
+	                copy_row("McKinley Hysteresis", f"{mckinley:.4f}")
+	                copy_row("Capillary length",    f"{l_cap:.4f}")
+	                copy_row("Theoretical slope",   f"{slope_theoretical:.6f}")
+	                copy_row("Measured ACA slope",  f"{slope:.6f}")
+	                copy_row("x2",                  f"{x2:.6f}")
+	                copy_row("x3",                  f"{x3:.6f}")
