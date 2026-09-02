@@ -65,16 +65,11 @@ def make_fig(title, xlabel='Non-dimensionalized Position', ylabel='Non-dimension
     return fig
 
 def copy_row(label, value):
-    st.markdown(f"""
-    <div style="display:flex; align-items:center; margin-bottom:6px;">
-        <span style="width:280px; font-weight:500;">{label}</span>
-        <span style="width:120px;">{value}</span>
-        <button onclick="navigator.clipboard.writeText('{value}')"
-                style="margin-left:10px; padding:2px 10px; cursor:pointer;">
-            Copy
-        </button>
-    </div>
-    """, unsafe_allow_html=True)
+    c1, c2 = st.columns([2, 1])
+    with c1:
+        st.write(f"**{label}**")
+    with c2:
+        st.text_input(label, value=value, key=f"copy_{label}", label_visibility="collapsed")
 
 # ── File upload ───────────────────────────────────────────────────────────────
 uploaded_file = st.file_uploader("Upload DynamicCA .txt file", type="txt")
