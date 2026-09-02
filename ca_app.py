@@ -1,13 +1,12 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 from scipy.stats import linregress
 from scipy.interpolate import interp1d
 from math import sqrt, degrees, asin
 import io
-import plotly.io as pio
 
 st.set_page_config(page_title="Contact Angle Analysis", layout="wide")
 st.title("Contact Angle Analysis")
@@ -35,7 +34,8 @@ def find_touch_point(set1, tolerance=0.005):
     return None
 
 def nondimensionalize(set1, set2, x1, g, p, sft, l_cap):
-    set1 = set1.copy(); set2 = set2.copy()
+    set1 = set1.copy()
+    set2 = set2.copy()
     set1['x1_nd'] = (set1['pos1'] - x1) / (sqrt(2) * l_cap)
     set1['y1_nd'] = 1000 * set1['wt1'] * g / (p * sft)
     set2['x2_nd'] = (set2['pos2'] - x1) / (sqrt(2) * l_cap)
@@ -55,24 +55,28 @@ def calculate_ca(x, case):
 
 def make_fig(title, xlabel='Non-dimensionalized Position', ylabel='Non-dimensionalized Force'):
     fig = go.Figure()
-    fig.update_layout(height=FIG_H, title=title, xaxis_title=xlabel, yaxis_title=ylabel,
-                      legend=dict(font=dict(size=9)), margin=dict(l=50, r=20, t=40, b=40),
-                      hovermode='closest')
+    fig.update_layout(
+        height=FIG_H, title=title,
+        xaxis_title=xlabel, yaxis_title=ylabel,
+        legend=dict(font=dict(size=9)),
+        margin=dict(l=50, r=20, t=40, b=40),
+        hovermode='closest'
+    )
     return fig
 
 def copy_row(label, value):
-	st.markdown(f"""
-	<div style="display:flex; align-items:center; margin-bottom:6px;">
-		<span style="width:280px; font-weight:500;">{label}</span>
-		<span style="width:120px;">{value}</span>
-		<button onclick="navigator.clipboard.writeText('{value}')"
-				style="margin-left:10px; padding:2px 10px; cursor:pointer;">
-			Copy
-		</button>
-	</div>
-	""", unsafe_allow_html=True)
+    st.markdown(f"""
+    <div style="display:flex; align-items:center; margin-bottom:6px;">
+        <span style="width:280px; font-weight:500;">{label}</span>
+        <span style="width:120px;">{value}</span>
+        <button onclick="navigator.clipboard.writeText('{value}')"
+                style="margin-left:10px; padding:2px 10px; cursor:pointer;">
+            Copy
+        </button>
+    </div>
+    """, unsafe_allow_html=True)
 
-# ── File upload (above columns) ───────────────────────────────────────────────
+# ── File upload ───────────────────────────────────────────────────────────────
 uploaded_file = st.file_uploader("Upload DynamicCA .txt file", type="txt")
 
 if uploaded_file:
@@ -84,16 +88,14 @@ if uploaded_file:
 
     st.markdown("---")
 
-    # ── Two-column layout ─────────────────────────────────────────────────────
     left, right = st.columns(2)
 
-    # ═════════════════════════════════════════════════════════════════════════
-    # LEFT COLUMN — Data Prep + Parameters
-    # ═════════════════════════════════════════════════════════════════════════
+    # =========================================================================
+    # LEFT COLUMN
+    # =========================================================================
     with left:
         st.header("① Data Preparation")
 
-        # All cycles overview
         st.subheader("All Cycles Overview")
         colors_adv = ['black', 'blue', 'green', 'red']
         colors_rec = ['gray', 'steelblue', 'limegreen', 'salmon']
@@ -105,6 +107,7 @@ if uploaded_file:
             fig.add_trace(go.Scatter(x=s2['pos2'], y=s2['wt2'], mode='lines',
                                      name=f'Cycle {c} Rec', line=dict(color=colors_rec[c-1], dash='dash')))
         st.plotly_chart(fig, width='stretch')
+
         # PNG download using matplotlib
         fig_dl, ax_dl = plt.subplots(figsize=(9, 4))
         for c in range(1, 5):
@@ -122,9 +125,8 @@ if uploaded_file:
         buf.seek(0)
         plt.close(fig_dl)
         st.download_button(label="Download Overview", data=buf,
-                   file_name=f"{base_name}_all_cycles.png", mime="image/png")
+                           file_name=f"{base_name}_all_cycles.png", mime="image/png")
 
-        # Selected cycle
         st.subheader(f"Selected Cycle {cycle}")
         fig = make_fig('Raw Data: Position vs Weight', 'Position (mm)', 'Weight (g)')
         fig.add_trace(go.Scatter(x=set1['pos1'], y=set1['wt1'], mode='lines',
@@ -133,7 +135,6 @@ if uploaded_file:
                                  name='Receding', line=dict(color='red')))
         st.plotly_chart(fig, width='stretch')
 
-        # Touch point
         st.subheader("Touch Point Detection")
         touch_tol = st.number_input("Touch point tolerance (g)", value=0.005, format="%.4f")
         x1 = find_touch_point(set1, tolerance=touch_tol)
@@ -151,12 +152,16 @@ if uploaded_file:
 
         st.markdown("---")
         st.header("② Parameters & Non-dimensionalized Data")
-        preset = st.selectbox("Select liquid preset", ["Room Temperature (RT)", "120°C", "200°C", "Custom"])
+
+        preset = st.selectbox("Select liquid preset", [
+            "Room Temperature (RT)", "120°C", "200°C", "Custom"
+        ])
         presets = {
             "Room Temperature (RT)": (0.8934, 121.7),
             "120°C":                 (0.8485, 115.1),
             "200°C":                 (0.8304, 111.0),
         }
+
         c1, c2 = st.columns(2)
         with c1:
             if preset == "Custom":
@@ -188,9 +193,9 @@ if uploaded_file:
         fig.update_xaxes(range=[0, 2.5])
         st.plotly_chart(fig, width='stretch')
 
-    # ═════════════════════════════════════════════════════════════════════════
-    # RIGHT COLUMN — ACA + RCA & Summary
-    # ═════════════════════════════════════════════════════════════════════════
+    # =========================================================================
+    # RIGHT COLUMN
+    # =========================================================================
     with right:
         st.header("③ Advancing Contact Angle (ACA)")
 
@@ -222,7 +227,6 @@ if uploaded_file:
             fig.add_vline(x=x_min_aca, line_dash='dash', line_color='red', opacity=0.4)
             fig.add_vline(x=x_max_aca, line_dash='dash', line_color='red', opacity=0.4)
             st.plotly_chart(fig, width='stretch')
-            
             st.write(f"**ACA fit:** y = {slope:.6f}x + {intercept:.6f}  R² = {r_value**2:.6f}")
         else:
             st.warning("Need at least 2 points in the fit window.")
@@ -236,8 +240,10 @@ if uploaded_file:
                 options = [f"Point {i+1}: x = {pt['x']:.4f}" for i, pt in enumerate(intersections_aca)]
                 options.append("Manual entry")
                 selected = st.selectbox("Select intersection point", options, key='sel_aca')
-                x2 = st.number_input("Enter x2 manually", value=0.0, format="%.6f", key='manual_x2') \
-                    if selected == "Manual entry" else intersections_aca[options.index(selected)]['x']
+                if selected == "Manual entry":
+                    x2 = st.number_input("Enter x2 manually", value=0.0, format="%.6f", key='manual_x2')
+                else:
+                    x2 = intersections_aca[options.index(selected)]['x']
             else:
                 st.warning("No intersections found — try increasing tolerance.")
                 x2 = st.number_input("Enter x2 manually", value=0.0, format="%.6f", key='manual_x2_only')
@@ -251,8 +257,9 @@ if uploaded_file:
             for i, pt in enumerate(intersections_aca):
                 if abs(pt['x'] - x2) < 1e-9:
                     fig.add_trace(go.Scatter(x=[pt['x']], y=[pt['y']], mode='markers',
-                                             name='Selected', marker=dict(color='green', size=12,
-                                             line=dict(color='black', width=2))))
+                                             name='Selected',
+                                             marker=dict(color='green', size=12,
+                                                         line=dict(color='black', width=2))))
                 else:
                     fig.add_trace(go.Scatter(x=[pt['x']], y=[pt['y']], mode='markers',
                                              marker=dict(color='cyan', size=8), showlegend=False))
@@ -262,7 +269,7 @@ if uploaded_file:
             case_aca = st.radio("Case", ['ACA > 90°', 'ACA < 90°'], key='case_aca', horizontal=True)
             ca_aca = calculate_ca(x2, case_aca)
             if ca_aca is not None:
-                st.success(f"x2 = {x2:.6f} → **ACA = {ca_aca:.2f}°**")
+                st.success(f"x2 = {x2:.6f} → **ACA = {ca_aca:.2f}**")
             else:
                 st.error(f"x2 = {x2:.4f} is out of valid range.")
                 ca_aca = None
@@ -273,7 +280,6 @@ if uploaded_file:
         x_rec = set2_nd['x2_nd'].values
         y_rec = set2_nd['y2_nd'].values
 
-        # Buoyancy check
         st.subheader("Buoyancy Line Check")
         buoyancy_slope = -np.sqrt(2) * area / (p * l_cap)
         buoyancy_tol   = st.number_input("Buoyancy tolerance", value=0.005, format="%.4f", key='btol')
@@ -302,7 +308,6 @@ if uploaded_file:
             st.info("No intersection found in search region.")
         st.plotly_chart(fig, width='stretch')
 
-        # RCA linear fit
         st.subheader("Linear Fit — Receding")
         c1, c2 = st.columns(2)
         with c1:
@@ -341,8 +346,10 @@ if uploaded_file:
                 options_rca = [f"Point {i+1}: x = {pt['x']:.4f}" for i, pt in enumerate(intersections_rca)]
                 options_rca.append("Manual entry")
                 selected_rca = st.selectbox("Select intersection point", options_rca, key='sel_rca')
-                x3 = st.number_input("Enter x3 manually", value=0.0, format="%.6f", key='manual_x3') \
-                    if selected_rca == "Manual entry" else intersections_rca[options_rca.index(selected_rca)]['x']
+                if selected_rca == "Manual entry":
+                    x3 = st.number_input("Enter x3 manually", value=0.0, format="%.6f", key='manual_x3')
+                else:
+                    x3 = intersections_rca[options_rca.index(selected_rca)]['x']
             else:
                 st.warning("No intersections found — try increasing tolerance.")
                 x3 = st.number_input("Enter x3 manually", value=0.0, format="%.6f", key='manual_x3_only')
@@ -356,8 +363,9 @@ if uploaded_file:
             for i, pt in enumerate(intersections_rca):
                 if abs(pt['x'] - x3) < 1e-9:
                     fig.add_trace(go.Scatter(x=[pt['x']], y=[pt['y']], mode='markers',
-                                             name='Selected', marker=dict(color='green', size=12,
-                                             line=dict(color='black', width=2))))
+                                             name='Selected',
+                                             marker=dict(color='green', size=12,
+                                                         line=dict(color='black', width=2))))
                 else:
                     fig.add_trace(go.Scatter(x=[pt['x']], y=[pt['y']], mode='markers',
                                              marker=dict(color='cyan', size=8), showlegend=False))
@@ -374,15 +382,14 @@ if uploaded_file:
                 val = 1 - x4**2
                 if -1 <= val <= 1:
                     rca = degrees(asin(val))
-                    st.success(f"x3={x3:.6f}, x_90={x_90_val:.6f}, x4={x4:.6f} → **RCA = {rca:.2f}°**")
+                    st.success(f"x3={x3:.6f}, x_90={x_90_val:.6f}, x4={x4:.6f} → **RCA = {rca:.2f}**")
                 else:
                     st.error("x4 out of valid range for asin.")
             else:
                 rca = calculate_ca(x3, case_rca)
                 if rca is not None:
-                    st.success(f"x3 = {x3:.6f} → **RCA = {rca:.2f}°**")
+                    st.success(f"x3 = {x3:.6f} → **RCA = {rca:.2f}**")
 
-            # Summary
             if ca_aca is not None and rca is not None:
                 slope_theoretical = -np.sqrt(2) * area / (p * l_cap)
                 deviation = ((slope - slope_theoretical) / slope_theoretical) * 100
@@ -417,11 +424,11 @@ if uploaded_file:
                 fig.add_trace(go.Scatter(x=x_fit_s, y=slope_rca * x_fit_s + intercept_rca,
                                          mode='lines', name='RCA fit', line=dict(color='red', width=2)))
                 fig.add_trace(go.Scatter(x=[x2], y=[slope * x2 + intercept], mode='markers',
-                                         name=f'x2={x2:.4f} (ACA={ca_aca:.2f}°)',
+                                         name=f'x2={x2:.4f} (ACA={ca_aca:.2f})',
                                          marker=dict(color='blue', size=12,
                                                      line=dict(color='black', width=2))))
                 fig.add_trace(go.Scatter(x=[x3], y=[slope_rca * x3 + intercept_rca], mode='markers',
-                                         name=f'x3={x3:.4f} (RCA={rca:.2f}°)',
+                                         name=f'x3={x3:.4f} (RCA={rca:.2f})',
                                          marker=dict(color='red', size=12,
                                                      line=dict(color='black', width=2))))
                 fig.add_trace(go.Scatter(
@@ -434,15 +441,14 @@ if uploaded_file:
                 st.plotly_chart(fig, width='stretch')
 
                 st.subheader("Results")
-				
-				copy_row("ACA",                 f"{ca_aca:.2f}")
-				copy_row("RCA",                 f"{rca:.2f}")
-				copy_row("Classic CAH",         f"{ca_aca - rca:.2f}")
-				copy_row("Slope deviation",     f"{deviation:.2f}")
-				copy_row("Enclosed Area",       f"{encloarea:.4f}")
-				copy_row("McKinley Hysteresis", f"{mckinley:.4f}")
-				copy_row("Capillary length",    f"{l_cap:.4f}")
-				copy_row("Theoretical slope",   f"{slope_theoretical:.6f}")
-				copy_row("Measured ACA slope",  f"{slope:.6f}")
-				copy_row("x2",                  f"{x2:.6f}")
-				copy_row("x3",                  f"{x3:.6f}")
+                copy_row("ACA",                 f"{ca_aca:.2f}")
+                copy_row("RCA",                 f"{rca:.2f}")
+                copy_row("Classic CAH",         f"{ca_aca - rca:.2f}")
+                copy_row("Slope deviation",     f"{deviation:.2f}")
+                copy_row("Enclosed Area",       f"{encloarea:.4f}")
+                copy_row("McKinley Hysteresis", f"{mckinley:.4f}")
+                copy_row("Capillary length",    f"{l_cap:.4f}")
+                copy_row("Theoretical slope",   f"{slope_theoretical:.6f}")
+                copy_row("Measured ACA slope",  f"{slope:.6f}")
+                copy_row("x2",                  f"{x2:.6f}")
+                copy_row("x3",                  f"{x3:.6f}")
