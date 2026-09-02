@@ -434,7 +434,7 @@ if uploaded_file:
                 st.plotly_chart(fig, width='stretch')
 
                 st.subheader("Results")
-					
+				
 				copy_row("ACA",                 f"{ca_aca:.2f}")
 				copy_row("RCA",                 f"{rca:.2f}")
 				copy_row("Classic CAH",         f"{ca_aca - rca:.2f}")
