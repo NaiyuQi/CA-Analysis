@@ -422,6 +422,7 @@ if uploaded_file:
                 st.plotly_chart(fig, width='stretch')
 
                 st.subheader("Results")
+				
                 def copy_row(label, value):
                     st.markdown(f"""
                     <div style="display:flex; align-items:center; margin-bottom:6px;">
