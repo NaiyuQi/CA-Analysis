@@ -64,12 +64,6 @@ def make_fig(title, xlabel='Non-dimensionalized Position', ylabel='Non-dimension
     )
     return fig
 
-def copy_row(label, value):
-    c1, c2 = st.columns([2, 1])
-    with c1:
-        st.write(f"**{label}**")
-    with c2:
-        st.text_input(label, value=value, key=f"copy_{label}", label_visibility="collapsed")
 
 # ── File upload ───────────────────────────────────────────────────────────────
 uploaded_file = st.file_uploader("Upload DynamicCA .txt file", type="txt")
@@ -434,16 +428,20 @@ if uploaded_file:
                     name=f'Enclosed area={encloarea:.4f}'))
                 fig.update_xaxes(range=[0, 2.5])
                 st.plotly_chart(fig, width='stretch')
-
+                
                 st.subheader("Results")
-                copy_row("ACA",                 f"{ca_aca:.2f}")
-                copy_row("RCA",                 f"{rca:.2f}")
-                copy_row("Classic CAH",         f"{ca_aca - rca:.2f}")
-                copy_row("Slope deviation",     f"{deviation:.2f}")
-                copy_row("Enclosed Area",       f"{encloarea:.4f}")
-                copy_row("McKinley Hysteresis", f"{mckinley:.4f}")
-                copy_row("Capillary length",    f"{l_cap:.4f}")
-                copy_row("Theoretical slope",   f"{slope_theoretical:.6f}")
-                copy_row("Measured ACA slope",  f"{slope:.6f}")
-                copy_row("x2",                  f"{x2:.6f}")
-                copy_row("x3",                  f"{x3:.6f}")
+                st.markdown(f"""
+                | Parameter | Value |
+                |---|---|
+                | ACA | {ca_aca:.2f} |
+                | RCA | {rca:.2f} |
+                | Classic CAH | {ca_aca - rca:.2f} |
+                | Slope deviation | {deviation:.2f}% |
+                | Enclosed Area | {encloarea:.4f} |
+                | McKinley Hysteresis | {mckinley:.4f} |
+                | Capillary length | {l_cap:.4f} mm |
+                | Theoretical slope | {slope_theoretical:.6f} |
+                | Measured ACA slope | {slope:.6f} |
+                | x2 | {x2:.6f} |
+                | x3 | {x3:.6f} |
+                """)
