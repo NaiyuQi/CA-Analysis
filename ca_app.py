@@ -435,10 +435,10 @@ if uploaded_file:
                 |---|---|
                 | ACA | {ca_aca:.2f} |
                 | RCA | {rca:.2f} |
+                | McKinley Hysteresis | {mckinley:.4f} |
                 | Classic CAH | {ca_aca - rca:.2f} |
                 | Slope deviation | {deviation:.2f}% |
                 | Enclosed Area | {encloarea:.4f} |
-                | McKinley Hysteresis | {mckinley:.4f} |
                 | Capillary length | {l_cap:.4f} mm |
                 | Theoretical slope | {slope_theoretical:.6f} |
                 | Measured ACA slope | {slope:.6f} |
