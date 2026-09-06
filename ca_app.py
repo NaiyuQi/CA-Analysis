@@ -446,3 +446,7 @@ if uploaded_file:
                 | x2 | {x2:.6f} |
                 | x3 | {x3:.6f} |
                 """)
+
+st.write(f"set1 x: {set1_nd['x1_nd'].min():.4f} to {set1_nd['x1_nd'].max():.4f}")
+st.write(f"set2 x: {set2_nd['x2_nd'].min():.4f} to {set2_nd['x2_nd'].max():.4f}")
+st.write(f"Common x: {x_min_c:.4f} to {x_max_c:.4f}")
