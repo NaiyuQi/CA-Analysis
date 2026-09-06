@@ -184,35 +184,6 @@ if uploaded_file:
         fig.update_xaxes(range=[0, 2.5])
         st.plotly_chart(fig, width='stretch')
         
-        #Show enclosed area below ND plot 
-        set1_s = set1_nd.sort_values('x1_nd')
-        set2_s = set2_nd.sort_values('x2_nd')
-        x_min_c  = max(set1_s['x1_nd'].min(), set2_s['x2_nd'].min())
-        x_max_c  = min(set1_s['x1_nd'].max(), set2_s['x2_nd'].max())
-        x_common = np.linspace(x_min_c + 1e-9, x_max_c - 1e-9, 1000)
-        f_adv = interp1d(set1_s['x1_nd'].values, set1_s['y1_nd'].values,
-                 kind='linear', bounds_error=False, fill_value='extrapolate')
-        f_rec = interp1d(set2_s['x2_nd'].values, set2_s['y2_nd'].values,
-                 kind='linear', bounds_error=False, fill_value='extrapolate')
-        y_adv_i   = f_adv(x_common)
-        y_rec_i   = f_rec(x_common)
-        encloarea_preview = np.trapezoid(np.abs(y_adv_i - y_rec_i), x_common)
-        
-        fig_enc = make_fig('Enclosed Area')
-        fig_enc.add_trace(go.Scatter(x=set1_nd['x1_nd'], y=set1_nd['y1_nd'], mode='lines',
-                             name='Advancing', line=dict(color='blue')))
-        fig_enc.add_trace(go.Scatter(x=set2_nd['x2_nd'], y=set2_nd['y2_nd'], mode='lines',
-                             name='Receding', line=dict(color='magenta')))
-        fig_enc.add_trace(go.Scatter(
-            x=np.concatenate([x_common, x_common[::-1]]),
-            y=np.concatenate([y_adv_i, y_rec_i[::-1]]),
-            fill='toself', fillcolor='rgba(128,128,128,0.3)',
-            line=dict(color='rgba(255,255,255,0)'),
-            name=f'Enclosed area = {encloarea_preview:.4f}'))
-        fig_enc.update_xaxes(range=[0, 2.5])
-        st.plotly_chart(fig_enc, width='stretch')
-        st.write(f"**Enclosed area:** {encloarea_preview:.4f}")
-
     # =========================================================================
     # RIGHT COLUMN
     # =========================================================================
