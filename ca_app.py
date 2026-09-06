@@ -183,7 +183,8 @@ if uploaded_file:
         st.plotly_chart(fig, width='stretch')
         fig.update_xaxes(range=[0, 2.5])
         st.plotly_chart(fig, width='stretch')
-        Show enclosed area below ND plot 
+        
+        #Show enclosed area below ND plot 
         set1_s = set1_nd.sort_values('x1_nd')
         set2_s = set2_nd.sort_values('x2_nd')
         x_min_c  = max(set1_s['x1_nd'].min(), set2_s['x2_nd'].min())
