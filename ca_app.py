@@ -181,8 +181,7 @@ if uploaded_file:
                                  name='Receding', line=dict(color='magenta'), marker=dict(size=3)))
         fig.update_xaxes(range=[0, 2.5])
         st.plotly_chart(fig, width='stretch')
-        fig.update_xaxes(range=[0, 2.5])
-        st.plotly_chart(fig, width='stretch')
+
         
     # =========================================================================
     # RIGHT COLUMN
