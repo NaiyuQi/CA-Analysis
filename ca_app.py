@@ -437,8 +437,6 @@ if uploaded_file:
                 | ACA | {ca_aca:.2f} |
                 | RCA | {rca:.2f} |
                 | Enclosed Area | {encloarea:.4f} |
-
-                
                 | McKinley Hysteresis | {mckinley:.4f} |
                 | Classic CAH | {ca_aca - rca:.2f} |
                 | Slope deviation | {deviation:.2f}% |
