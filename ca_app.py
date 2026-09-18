@@ -183,15 +183,11 @@ if uploaded_file:
         st.plotly_chart(fig, width='stretch')
 
         # Download ND data
-        nd_df = pd.DataFrame({
-            'x_adv': set1_nd['x1_nd'].values,
-            'y_adv': set1_nd['y1_nd'].values,
-            'x_rec': pd.Series(set2_nd['x2_nd'].values),
-            'y_rec': pd.Series(set2_nd['y2_nd'].values),
-        })
+        nd_adv = pd.DataFrame({'x_adv': set1_nd['x1_nd'].values, 'y_adv': set1_nd['y1_nd'].values})
+        nd_rec = pd.DataFrame({'x_rec': set2_nd['x2_nd'].values, 'y_rec': set2_nd['y2_nd'].values})
+        nd_df  = pd.concat([nd_adv, nd_rec], axis=1)
         csv = nd_df.to_csv(index=False).encode('utf-8')
-        st.download_button(label="Download ND Data",
-                           data=csv,
+        st.download_button(label="Download ND Data", data=csv,
                            file_name=f"{base_name}_cycle{cycle}_nd.csv",
                            mime="text/csv")
 
