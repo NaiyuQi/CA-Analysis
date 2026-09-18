@@ -182,6 +182,19 @@ if uploaded_file:
         fig.update_xaxes(range=[0, 2.5])
         st.plotly_chart(fig, width='stretch')
 
+        # Download ND data
+        nd_df = pd.DataFrame({
+            'x_adv': set1_nd['x1_nd'].values,
+            'y_adv': set1_nd['y1_nd'].values,
+            'x_rec': pd.Series(set2_nd['x2_nd'].values),
+            'y_rec': pd.Series(set2_nd['y2_nd'].values),
+        })
+        csv = nd_df.to_csv(index=False).encode('utf-8')
+        st.download_button(label="Download ND Data",
+                           data=csv,
+                           file_name=f"{base_name}_cycle{cycle}_nd.csv",
+                           mime="text/csv")
+
         
     # =========================================================================
     # RIGHT COLUMN
